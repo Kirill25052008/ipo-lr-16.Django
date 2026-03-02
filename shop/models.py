@@ -9,11 +9,6 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
-    class Meta:
-        verbose_name = "Категория товара"
-        verbose_name_plural = "Категории товаров"
-
-
 class Manufacturer(models.Model):
     name = models.CharField(max_length=100, verbose_name="Название")
     country = models.CharField(max_length=100, verbose_name="Страна")
@@ -22,10 +17,6 @@ class Manufacturer(models.Model):
     def __str__(self):
         return self.name
 
-    class Meta:
-        verbose_name = "Производитель"
-        verbose_name_plural = "Производители"
-
 
 class Product(models.Model):
     name = models.CharField(max_length=200, verbose_name="Название")
@@ -33,17 +24,11 @@ class Product(models.Model):
     product_image = models.ImageField(upload_to='products/', verbose_name="Фото товара")
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Цена")
     stock_quantity = models.IntegerField(verbose_name="Количество на складе")
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name="Категория")
+    manufacturer = models.ForeignKey(Manufacturer, on_delete=models.CASCADE, verbose_name="Производитель")
     
-    category = models.ForeignKey(
-        Category, 
-        on_delete=models.CASCADE, 
-        verbose_name="Категория"
-    )
-    manufacturer = models.ForeignKey(
-        Manufacturer, 
-        on_delete=models.CASCADE, 
-        verbose_name="Производитель"
-    )
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name="Категория")
+    manufacturer = models.ForeignKey(Manufacturer, on_delete=models.CASCADE, verbose_name="Производитель")
 
     def clean(self):
         if self.price < 0:
@@ -58,22 +43,11 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
-    class Meta:
-        verbose_name = "Товар"
-        verbose_name_plural = "Товары"
-
 
 class Cart(models.Model):
     """Модель корзины, связанная с пользователем."""
-    user = models.OneToOneField(
-        User, 
-        on_delete=models.CASCADE, 
-        verbose_name="Пользователь"
-    )
-    created_at = models.DateTimeField(
-        auto_now_add=True, 
-        verbose_name="Дата создания"
-    )
+    user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name="Пользователь")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
 
     def __str__(self):
         return f"Корзина пользователя {self.user.username}"
@@ -86,16 +60,8 @@ class Cart(models.Model):
 
 class CartItem(models.Model):
     """Модель элемента корзины."""
-    cart = models.ForeignKey(
-        Cart, 
-        on_delete=models.CASCADE, 
-        verbose_name="Корзина"
-    )
-    product = models.ForeignKey(
-        Product, 
-        on_delete=models.CASCADE, 
-        verbose_name="Товар"
-    )
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, verbose_name="Корзина")
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name="Товар")
     quantity = models.PositiveIntegerField(verbose_name="Количество")
 
     def __str__(self):
