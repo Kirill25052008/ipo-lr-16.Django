@@ -45,14 +45,13 @@ class Product(models.Model):
     )
 
     def clean(self):
-        # Валидация данных
         if self.price < 0:
             raise ValidationError({'price': "Цена не может быть отрицательной."})
         if self.stock_quantity < 0:
             raise ValidationError({'stock_quantity': "Количество на складе не может быть отрицательным."})
 
     def save(self, *args, **kwargs):
-        self.full_clean()  # Принудительный запуск валидации перед сохранением
+        self.full_clean()
         super().save(*args, **kwargs)
 
     def __str__(self):
