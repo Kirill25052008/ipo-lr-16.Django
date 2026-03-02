@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from your_app.models import Category, Manufacturer, Product, Cart, CartItem
+from shop.models import Category, Manufacturer, Product, Cart, CartItem
 import random
 
 # Создаем 5 производителей
@@ -38,3 +38,4 @@ for i in range(1, 6):
         CartItem.objects.create(cart=cart, product=item_product, quantity=random.randint(1, 3))
 
 print("База данных успешно заполнена!")
+
