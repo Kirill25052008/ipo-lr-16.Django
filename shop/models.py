@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import User
 
 class Category(models.Model):
     name = models.CharField(max_length=100, verbose_name="Название")
@@ -60,3 +61,58 @@ class Product(models.Model):
     class Meta:
         verbose_name = "Товар"
         verbose_name_plural = "Товары"
+
+
+class Cart(models.Model):
+    """Модель корзины, связанная с пользователем."""
+    user = models.OneToOneField(
+        User, 
+        on_delete=models.CASCADE, 
+        verbose_name="Пользователь"
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True, 
+        verbose_name="Дата создания"
+    )
+
+    def __str__(self):
+        return f"Корзина пользователя {self.user.username}"
+
+    def total_price(self):
+        """Вычисляет общую стоимость всех элементов в корзине."""
+        # Используем related_name (по умолчанию cartitem_set) для доступа к элементам
+        items = self.cartitem_set.all()
+        return sum(item.item_price() for item in items)
+
+class CartItem(models.Model):
+    """Модель элемента корзины."""
+    cart = models.ForeignKey(
+        Cart, 
+        on_delete=models.CASCADE, 
+        verbose_name="Корзина"
+    )
+    product = models.ForeignKey(
+        Product, 
+        on_delete=models.CASCADE, 
+        verbose_name="Товар"
+    )
+    quantity = models.PositiveIntegerField(verbose_name="Количество")
+
+    def __str__(self):
+        return f"{self.product.name} ({self.quantity} шт.)"
+
+    def item_price(self):
+        """Возвращает стоимость данного элемента (цена товара * количество)."""
+        return self.product.price * self.quantity
+
+    def clean(self):
+        """Валидация: количество не должно превышать остаток на складе."""
+        if self.quantity > self.product.stock_quantity:
+            raise ValidationError(
+                f"Недостаточно товара на складе. Доступно: {self.product.stock_quantity}"
+            )
+
+    def save(self, *args, **kwargs):
+        """Вызов полной валидации перед сохранением."""
+        self.full_clean()
+        super().save(*args, **kwargs)
