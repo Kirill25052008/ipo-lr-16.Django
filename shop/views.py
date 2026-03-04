@@ -45,8 +45,8 @@ def product_detail(request, pk):
 @login_required
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
-    # Ищем существующий товар в корзине или создаем новый
-    cart_item, created = CartItem.objects.get_or_create(
+    
+    cart_item, created = CartItem.objects.get_or_create( # Ищем существующий товар в корзине или создаем новый
         user=request.user, 
         product=product
     )
@@ -63,12 +63,11 @@ def update_cart(request, item_id):
     cart_item = get_object_or_404(CartItem, id=item_id, user=request.user)
     new_quantity = int(request.POST.get('quantity', 1))
     
-    # Валидация остатка на складе
-    if new_quantity <= cart_item.product.quantity_in_stock:
+    
+    if new_quantity <= cart_item.product.quantity_in_stock: # Валидация остатка на складе
         cart_item.quantity = new_quantity
         cart_item.save()
     else:
-        # Здесь можно добавить сообщение об ошибке (messages.error)
         pass
         
     return redirect('cart_view')
@@ -85,10 +84,14 @@ def remove_from_cart(request, item_id):
 def cart_view(request):
     cart_items = CartItem.objects.filter(user=request.user).select_related('product')
     
-    # Считаем общую стоимость корзины
-    total_cost = sum(item.product.price * item.quantity for item in cart_items)
+    
+    total_cost = sum(item.product.price * item.quantity for item in cart_items) # Считаем общую стоимость корзины
     
     return render(request, 'cart/cart_detail.html', {
         'cart_items': cart_items,
         'total_cost': total_cost
     })
+
+@login_required
+def view_cart(request):
+    return render(request, 'cart/cart_detail.html')
