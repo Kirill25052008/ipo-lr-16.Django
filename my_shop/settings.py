@@ -114,5 +114,5 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 LOGIN_URL = 'login' # Куда перенаправить неавторизованного пользователя
-LOGIN_REDIRECT_URL = '/' # Куда перенаправить после успешного входа
+LOGIN_REDIRECT_URL = 'catalog/' # Куда перенаправить после успешного входа
 LOGOUT_REDIRECT_URL = '/' # Куда перенаправить после выхода
