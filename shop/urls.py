@@ -2,6 +2,8 @@ from django.urls import path
 from . import views
 from django.urls import path, include
 
+app_name = 'shop'
+
 urlpatterns = [
     path('index/', views.index, name = 'index'),
     path('about/', views.about, name = 'about'),
@@ -13,4 +15,5 @@ urlpatterns = [
     path('cart/remove/<int:item_id>/', views.cart_remove, name = 'cart_remove'), # Удаление товара из корзины
     path('cart/', views.cart_view, name = 'cart_view'), # Просмотр корзины пользователя
     path('accounts/', include('django.contrib.auth.urls')),
+    path('checkout/', views.checkout, name='checkout'),
 ]
