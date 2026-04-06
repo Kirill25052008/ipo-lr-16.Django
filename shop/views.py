@@ -1,8 +1,13 @@
+import openpyxl
+
+from io import BytesIO
+from django.core.mail import EmailMessage
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q, Sum, F
 from django.contrib.auth.decorators import login_required
-from .models import Product, CartItem
+from .models import Product, CartItem, Order, OrderItem
+from .cart import Cart
 
 def index(request):
     return HttpResponse("Главная страница. <br> <a href='/about/'>Об авторе</a> <br> <a href='/shop/'>О магазине</a>")
@@ -95,3 +100,55 @@ def cart_view(request):
 @login_required
 def view_cart(request):
     return render(request, 'cart/cart_detail.html')
+
+
+
+@login_required
+def checkout(request):
+    cart = Cart(request)
+    if request.method == 'POST':
+        # 1. Создание заказа
+        address = request.POST.get('address')
+        order = Order.objects.create(user=request.user, address=address)
+        
+        for item in cart:
+            OrderItem.objects.create(
+                order=order,
+                product=item['product'],
+                price=item['price'],
+                quantity=item['quantity']
+            )
+
+        # 2. Генерация чека в Excel
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = f"Order_{order.id}"
+        
+        headers = ['Товар', 'Цена', 'Количество', 'Сумма']
+        ws.append(headers)
+        
+        for item in cart:
+            ws.append([str(item['product']), item['price'], item['quantity'], item['total_price']])
+            
+        ws.append(['', '', 'ИТОГО:', cart.get_total_price()])
+
+        # Сохраняем в буфер памяти
+        output = BytesIO()
+        wb.save(output)
+        output.seek(0)
+
+        # 3. Отправка чека по Email
+        email = EmailMessage(
+            f'Ваш заказ №{order.id}',
+            'Благодарим за покупку! Чек во вложении.',
+            'from@example.com',
+            [request.user.email],
+        )
+        email.attach(f'receipt_{order.id}.xlsx', output.read(), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        email.send()
+
+        # 4. Очистка корзины
+        cart.clear()
+        return render(request, 'shop/success.html', {'order': order})
+
+    return render(request, 'shop/checkout.html', {'cart': cart})
