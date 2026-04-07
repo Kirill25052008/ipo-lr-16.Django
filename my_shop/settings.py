@@ -104,13 +104,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
 LANGUAGE_CODE = 'ru-ru'
-
 TIME_ZONE = 'Europe/Minsk'
-
 USE_I18N = True
-
 USE_TZ = True
-
 STATIC_URL = 'static/'
 
 LOGIN_URL = 'login' # Куда перенаправить неавторизованного пользователя
@@ -118,4 +114,7 @@ LOGIN_REDIRECT_URL = 'catalog/' # Куда перенаправить после
 LOGOUT_REDIRECT_URL = '/' # Куда перенаправить после выхода
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-EMAIL_HOST = '://gmail.com'
+EMAIL_HOST = '://mail.ru'   
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'temnik.kira08@mail.ru'
