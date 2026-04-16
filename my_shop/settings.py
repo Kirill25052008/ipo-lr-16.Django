@@ -119,3 +119,17 @@ EMAIL_HOST = '://mail.ru'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'temnik.kira08@mail.ru'
+
+
+
+REST_FRAMEWORK = {
+
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    
+    'DEFAULT_PERMISSION_CLASSES': [  # Доступ разрешен только аутентифицированным пользователям
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+}
