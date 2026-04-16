@@ -6,8 +6,10 @@ from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q, Sum, F
 from django.contrib.auth.decorators import login_required
-from .models import Product, CartItem, Order, OrderItem
+from .models import Product, CartItem, Order, OrderItem, Category, Manufacturer, Cart
 from .cart import Cart
+from rest_framework import viewsets
+from .serializers import (ProductSerializer, CategorySerializer, ManufacturerSerializer, CartSerializer, CartItemSerializer)
 
 def index(request):
     return HttpResponse("Главная страница. <br> <a href='/about/'>Об авторе</a> <br> <a href='/shop/'>О магазине</a>")
