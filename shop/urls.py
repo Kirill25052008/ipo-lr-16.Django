@@ -1,6 +1,7 @@
-from django.urls import path
-from . import views
 from django.urls import path, include
+from . import views
+from rest_framework.routers import DefaultRouter
+from .views import (ProductViewSet, CategoryViewSet, ManufacturerViewSet, CartViewSet, CartItemViewSet)
 
 app_name = 'shop'
 
@@ -16,4 +17,14 @@ urlpatterns = [
     path('cart/', views.cart_view, name = 'cart_view'), # Просмотр корзины пользователя
     path('accounts/', include('django.contrib.auth.urls')),
     path('checkout/', views.checkout, name='checkout'),
+    path('', include(router.urls)),
 ]
+
+# Создаем роутер и регистрируем ViewSets
+router = DefaultRouter()
+router.register(r'products', ProductViewSet)
+router.register(r'categories', CategoryViewSet)
+router.register(r'manufacturers', ManufacturerViewSet)
+router.register(r'carts', CartViewSet)
+router.register(r'cart-items', CartItemViewSet)
+
