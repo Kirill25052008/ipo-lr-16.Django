@@ -10,12 +10,34 @@ from .models import Product, CartItem, Order, OrderItem, Category, Manufacturer,
 from .cart import Cart
 from rest_framework import viewsets
 from .serializers import (ProductSerializer, CategorySerializer, ManufacturerSerializer, CartSerializer, CartItemSerializer)
+from django.core.paginator import Paginator
 
 def index(request):
     return HttpResponse("Главная страница. <br> <a href='/about/'>Об авторе</a> <br> <a href='/shop/'>О магазине</a>")
     popular_products = Product.objects.all().order_update('-id')[:6]
     categories = Category.objects.all()
     return render(request, 'shop/index.html', {'popular_products': popular_products,'categories': categories})
+
+def catalog(request):
+    queryset = Product.objects.all()
+    categories = Category.objects.all()
+
+    category_id = request.GET.get('category')
+    search_query = request.GET.get('search')
+
+    if category_id:
+        queryset = queryset.filter(category_id=category_id)
+    if search_query:
+        queryset = queryset.filter(name__icontains=search_query)
+
+    paginator = Paginator(queryset, 9)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'shop/catalog.html', {
+        'page_obj': page_obj,
+        'categories': categories
+    })
 
 def about(request):
     return HttpResponse("Автор: Темник Кирилл, Студент группы 88ТП")
