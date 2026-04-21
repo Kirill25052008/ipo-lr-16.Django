@@ -4,6 +4,7 @@ from rest_framework.routers import DefaultRouter
 from .views import (ProductViewSet, CategoryViewSet, ManufacturerViewSet, CartViewSet, CartItemViewSet)
 from django.conf import settings
 from django.conf.urls.static import static
+from .views import index, catalog
 
 app_name = 'shop'
 
@@ -21,6 +22,8 @@ urlpatterns = [
     path('checkout/', views.checkout, name='checkout'),
     path('', include(router.urls)),
     path('admin/', admin.site.urls),
+    path('', index, name='index'),
+    path('catalog/', catalog, name='catalog'),
 ]
 
 if settings.DEBUG:
