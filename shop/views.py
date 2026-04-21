@@ -13,6 +13,9 @@ from .serializers import (ProductSerializer, CategorySerializer, ManufacturerSer
 
 def index(request):
     return HttpResponse("Главная страница. <br> <a href='/about/'>Об авторе</a> <br> <a href='/shop/'>О магазине</a>")
+    popular_products = Product.objects.all().order_update('-id')[:6]
+    categories = Category.objects.all()
+    return render(request, 'shop/index.html', {'popular_products': popular_products,'categories': categories})
 
 def about(request):
     return HttpResponse("Автор: Темник Кирилл, Студент группы 88ТП")
