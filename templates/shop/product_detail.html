@@ -1,1 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/">Главная</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'catalog' %}">Каталог</a></li>
+    <li class="breadcrumb-item active">{{ product.name }}</li>
+  </ol>
+</nav>
+
+<div class="row mt-4">
+
+    <div class="col-md-6">
+        <img src="{{ product.image.url }}" class="img-fluid rounded shadow" alt="{{ product.name }}">
+    </div>
+
+    <div class="col-md-6">
+        <h1 class="display-5">{{ product.name }}</h1>
+        <p class="text-muted">Производитель: <strong>{{ product.manufacturer }}</strong></p>
+        <hr>
+        <p>{{ product.description }}</p>
+        <h3 class="text-primary my-4">{{ product.price }} ₽</h3>
+        <p>На складе: {{ product.stock_quantity }} шт.</p>
+
+        {% if product.stock_quantity > 0 %}
+            <button class="btn btn-success btn-lg px-5 add-to-cart-btn" data-id="{{ product.id }}">
+                Добавить в корзину
+            </button>
+        {% else %}
+            <button class="btn btn-secondary btn-lg px-5" disabled>
+                Нет в наличии
+            </button>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
 
